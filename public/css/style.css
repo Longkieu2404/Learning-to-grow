@@ -111,3 +111,16 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
   .subject{flex:none;width:100%;max-width:340px;aspect-ratio:auto;border-radius:32px;font-size:2rem}
   .subject span{font-size:3rem}
 }
+
+/* ===== Thẻ môn học cỡ lớn: chiếm gần hết khu vực nội dung ===== */
+#s-home{max-width:none;width:100%}
+.subjects{gap:32px}
+.subject{flex:none;max-width:none;
+  width:min(calc((100vw - 230px - 40px - 64px) / 3), calc(100vh - 80px));aspect-ratio:1/1;
+  font-size:clamp(1.8rem,3.6vw,4.2rem);border-radius:56px}
+.subject span{font-size:clamp(4rem,11vw,15rem)}
+.subject:hover{transform:scale(1.05)}
+@media (max-width:760px){
+  .subject{width:100%;max-width:340px;aspect-ratio:auto;border-radius:32px;font-size:2rem}
+  .subject span{font-size:3rem}
+}
