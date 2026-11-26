@@ -132,7 +132,6 @@ $("alphaGrid").addEventListener("click", e => {
   b.classList.remove("on"); void b.offsetWidth; b.classList.add("on");
 });
 $("btnAlphaBack").addEventListener("click", () => show("s-vi"));
-$("btnAlphaPlay").addEventListener("click", () => start("vi", "letters"));
 
 async function start(subject, section = null) {
   state.subject = subject; state.section = section; state.i = 0; state.got = 0; $("quizStars").textContent = state.stars;

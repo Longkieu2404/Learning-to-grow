@@ -173,3 +173,21 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 .pic{font-size:clamp(3rem,5vw,5.5rem);line-height:1.15;text-align:center}
 .nm{text-align:center;font-weight:700;font-size:clamp(1rem,1.3vw,1.4rem)}
 @media (max-width:760px){.alpha{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px}}
+
+/* ===== Bảng chữ cái: 29 thẻ vừa khít một màn hình, không cuộn ===== */
+#s-alpha{height:calc(100vh - 56px);height:calc(100dvh - 56px);gap:10px}
+#s-alpha .top .icon{width:46px;height:46px}
+#s-alpha .top h2{font-size:clamp(1.6rem,2.4vw,2.4rem)}
+.hint{font-size:clamp(1rem,1.3vw,1.3rem)}
+.alpha{flex:1;min-height:0;gap:clamp(8px,1vw,16px);
+  grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr))}
+.letter{container-type:size;padding:0;border-width:3px;justify-content:center;align-items:center;gap:2cqmin;min-width:0;min-height:0}
+.lt{align-self:flex-start;padding-left:9cqmin;font-size:19cqmin;gap:3cqmin}
+.pic{font-size:42cqmin;line-height:1}
+.nm{font-size:10.5cqmin;white-space:nowrap}
+@media (max-width:1000px){.alpha{grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr))}}
+@media (max-width:760px){
+  #s-alpha{height:calc(100vh - 130px);height:calc(100dvh - 130px)}
+  .alpha{grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(6,minmax(0,1fr));gap:6px}
+  .nm{display:none}.pic{font-size:46cqmin}.lt{font-size:24cqmin}
+}
