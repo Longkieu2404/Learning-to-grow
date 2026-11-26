@@ -42,3 +42,6 @@ input:focus{outline:none;border-color:var(--sky)}
 @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+.btn.google{background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:12px;font-size:1.2rem;border:3px solid #d9e6f2}
+.or{display:flex;align-items:center;gap:10px;color:#7a7c9e;font-weight:700}
+.or::before,.or::after{content:"";flex:1;height:2px;background:#e3ecf5}
