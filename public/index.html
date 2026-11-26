@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bé Học Vui</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><span>☁️</span><span>⭐</span><span>🎈</span><span>☁️</span></div>
+<main id="app">
+  <section id="s-auth" class="screen">
+    <div class="owl big">🦉</div>
+    <h1>Bé Học Vui</h1>
+    <p class="sub">Cùng cú Mơ học Toán, Tiếng Việt và Tiếng Anh nhé!</p>
+    <form id="authForm" class="card">
+      <input id="email" type="email" placeholder="Email của bố mẹ" required autocomplete="email">
+      <input id="password" type="password" placeholder="Mật khẩu (từ 6 ký tự)" minlength="6" required autocomplete="current-password">
+      <p id="authMsg" class="msg" role="alert"></p>
+      <button class="btn green" id="btnLogin" type="submit">Đăng nhập</button>
+      <button class="btn ghost" id="btnRegister" type="button">Tạo tài khoản mới</button>
+    </form>
+  </section>
+  <section id="s-home" class="screen hidden">
+    <header class="top">
+      <div class="owl">🦉</div>
+      <div class="stars">⭐ <b id="starCount">0</b></div>
+      <button class="icon" id="btnLogout" title="Đăng xuất" aria-label="Đăng xuất">🚪</button>
+    </header>
+    <h2>Hôm nay bé học gì nào?</h2>
+    <div class="subjects">
+      <button class="subject blue" data-subject="math"><span>🧮</span>Toán</button>
+      <button class="subject coral" data-subject="vi"><span>📖</span>Tiếng Việt</button>
+      <button class="subject sun" data-subject="en"><span>🌍</span>Tiếng Anh</button>
+    </div>
+    <label class="ai-toggle"><input type="checkbox" id="useAI"> ✨ Bài tập do AI tạo mới</label>
+  </section>
+  <section id="s-quiz" class="screen hidden">
+    <header class="top">
+      <button class="icon" id="btnBack" aria-label="Về trang chủ">🏠</button>
+      <div class="bar"><i id="barFill"></i></div>
+      <div class="stars">⭐ <b id="quizStars">0</b></div>
+    </header>
+    <div class="card q">
+      <div id="qEmoji" class="qemoji"></div>
+      <h2 id="qPrompt"></h2>
+      <button class="icon speak" id="btnSpeak" aria-label="Nghe đọc">🔊</button>
+    </div>
+    <div id="options" class="options"></div>
+    <p id="feedback" class="feedback" aria-live="polite"></p>
+  </section>
+  <section id="s-done" class="screen hidden">
+    <div class="owl big">🏆</div>
+    <h2>Giỏi quá!</h2>
+    <p class="sub">Bé được <b id="doneStars">0</b> ⭐ trong bài này</p>
+    <button class="btn green" id="btnAgain">Chơi tiếp</button>
+    <button class="btn ghost" id="btnHome">Về trang chủ</button>
+  </section>
+</main>
+<canvas id="fx"></canvas>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
