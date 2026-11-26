@@ -1,5 +1,6 @@
 import { watchUser, login, register, loginGoogle, logout, loadProgress, saveProgress, auth } from "./firebase.js";
 import { getQuestions, VI_SECTIONS } from "./exercises.js";
+import { ALPHABET } from "./alphabet.js";
 
 const $ = id => document.getElementById(id);
 const NAMES = { math: "Toán", vi: "Tiếng Việt", en: "Tiếng Anh" };
@@ -116,8 +117,22 @@ $("viGrid").innerHTML = VI_SECTIONS.map((x, i) =>
   `<button class="sec" data-sec="${x.id}" style="background:${x.color}">
      <span class="sec-top"><span class="sec-ico">${x.icon}</span><span class="sec-num">${String(i + 1).padStart(2, "0")}</span></span>
      <b>${x.title}</b><small>${x.desc}</small></button>`).join("");
-$("viGrid").addEventListener("click", e => { const b = e.target.closest(".sec"); if (b) start("vi", b.dataset.sec); });
+$("viGrid").addEventListener("click", e => { const b = e.target.closest(".sec"); if (b) b.dataset.sec === "letters" ? show("s-alpha") : start("vi", b.dataset.sec); });
 $("btnViBack").addEventListener("click", () => show("s-home"));
+
+// Bảng chữ cái: bấm vào chữ để nghe đọc (dữ liệu là hằng số trong alphabet.js)
+$("alphaGrid").innerHTML = ALPHABET.map((a, i) =>
+  `<button class="letter" data-i="${i}" aria-label="Chữ ${a.u}, ${a.w}">
+     <span class="lt"><b class="up">${a.u}</b><b class="lo">${a.l}</b></span>
+     <span class="pic">${a.e}</span><span class="nm">${a.w}</span></button>`).join("");
+$("alphaGrid").addEventListener("click", e => {
+  const b = e.target.closest(".letter"); if (!b) return;
+  const a = ALPHABET[b.dataset.i];
+  speak(`${a.n}. ${a.w}`, "vi-VN");
+  b.classList.remove("on"); void b.offsetWidth; b.classList.add("on");
+});
+$("btnAlphaBack").addEventListener("click", () => show("s-vi"));
+$("btnAlphaPlay").addEventListener("click", () => start("vi", "letters"));
 
 async function start(subject, section = null) {
   state.subject = subject; state.section = section; state.i = 0; state.got = 0; $("quizStars").textContent = state.stars;

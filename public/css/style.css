@@ -155,3 +155,21 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
   .sec{gap:6px}
 }
 @media (max-width:560px){.sec:last-child:nth-child(odd){grid-column:auto}}
+
+/* ===== Bảng chữ cái ===== */
+#s-alpha{width:100%;max-width:none;gap:14px}
+.btn.small{font-size:1.15rem;padding:10px 18px}
+.hint{margin:0;font-size:1.25rem;font-weight:700}
+.alpha{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(130px,12vw,200px),1fr));gap:16px;width:100%}
+.letter{font:inherit;color:var(--ink);border:4px solid #fff;border-radius:26px;padding:10px 12px 12px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:stretch;gap:2px;background:#fff;box-shadow:0 6px 0 rgba(43,45,91,.14);
+  transition:transform .18s ease}
+.letter:nth-child(5n+1){background:#e4eeff}.letter:nth-child(5n+2){background:#ffe6ef}.letter:nth-child(5n+3){background:#e0fae9}
+.letter:nth-child(5n+4){background:#fff3c8}.letter:nth-child(5n+5){background:#ece6ff}
+.letter:hover{transform:scale(1.07);z-index:1}.letter:active{transform:scale(.98)}
+.letter.on{border-color:var(--sun);animation:pop .35s}
+.lt{display:flex;gap:6px;align-items:baseline;font-size:clamp(1.8rem,2.4vw,2.8rem);font-weight:800;line-height:1}
+.up{color:#2f48c9}.lo{color:#e0364d}
+.pic{font-size:clamp(3rem,5vw,5.5rem);line-height:1.15;text-align:center}
+.nm{text-align:center;font-weight:700;font-size:clamp(1rem,1.3vw,1.4rem)}
+@media (max-width:760px){.alpha{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px}}
