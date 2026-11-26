@@ -1,4 +1,4 @@
-import { watchUser, login, register, logout, loadProgress, saveProgress } from "./firebase.js";
+import { watchUser, login, register, loginGoogle, logout, loadProgress, saveProgress } from "./firebase.js";
 import { getQuestions } from "./exercises.js";
 
 const $ = id => document.getElementById(id);
@@ -40,6 +40,16 @@ async function doAuth(fn) {
 $("authForm").addEventListener("submit", e => { e.preventDefault(); doAuth(login); });
 $("btnRegister").addEventListener("click", () => { if ($("authForm").reportValidity()) doAuth(register); });
 $("btnLogout").addEventListener("click", logout);
+$("btnGoogle").addEventListener("click", async () => {
+  $("authMsg").textContent = "";
+  try { await loginGoogle(); }
+  catch (e) {
+    if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return;
+    $("authMsg").textContent = e.code === "auth/popup-blocked" ? "Trình duyệt đang chặn cửa sổ đăng nhập, hãy cho phép rồi thử lại."
+      : e.code === "auth/unauthorized-domain" ? "Tên miền chưa được thêm vào Firebase."
+      : "Không đăng nhập được bằng Google, hãy thử lại.";
+  }
+});
 
 watchUser(async user => {
   state.user = user;

@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut }
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
+  GoogleAuthProvider, signInWithPopup }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./config.js";
@@ -11,6 +12,7 @@ const db = getFirestore(app);
 export const watchUser = cb => onAuthStateChanged(auth, cb);
 export const login = (e, p) => signInWithEmailAndPassword(auth, e, p);
 export const register = (e, p) => createUserWithEmailAndPassword(auth, e, p);
+export const loginGoogle = () => signInWithPopup(auth, new GoogleAuthProvider());
 export const logout = () => signOut(auth);
 
 // Đồng bộ sao & tiến độ theo tài khoản: users/{uid}
