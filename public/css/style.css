@@ -136,3 +136,22 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 .sec b{font-size:1.8rem;line-height:1.2}.sec small{font-size:1.15rem;opacity:.75}
 .qtext{font-size:1.5rem;line-height:1.5;margin:0;font-weight:500}.qtext:empty{display:none}
 @media (max-width:560px){.grid2{grid-template-columns:1fr}}
+
+/* ===== Màn hình Tiếng Việt: trải rộng toàn bộ khu vực nội dung ===== */
+#s-vi{width:100%;max-width:none;min-height:calc(100vh - 56px);gap:20px}
+#s-vi .top{padding:0 4px}
+#s-vi .top h2{font-size:clamp(2rem,3vw,3.2rem)}
+#viGrid{flex:1;gap:24px;grid-auto-rows:1fr}
+.sec{justify-content:space-between;padding:clamp(18px,2.2vw,36px) clamp(22px,3vw,48px);border-radius:36px}
+.sec-ico{font-size:clamp(2.8rem,4.6vw,5.5rem)}
+.sec-num{font-size:clamp(1.3rem,2vw,2.2rem)}
+.sec b{font-size:clamp(1.8rem,2.8vw,3.2rem)}
+.sec small{font-size:clamp(1.1rem,1.6vw,1.8rem)}
+.sec:hover{transform:scale(1.02)}
+.sec:last-child:nth-child(odd){grid-column:1 / -1}   /* thẻ lẻ cuối trải hết hàng, không để trống */
+@media (max-width:760px){
+  #s-vi{min-height:auto}
+  #viGrid{grid-auto-rows:auto;gap:14px}
+  .sec{gap:6px}
+}
+@media (max-width:560px){.sec:last-child:nth-child(odd){grid-column:auto}}
