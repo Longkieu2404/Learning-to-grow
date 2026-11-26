@@ -21,6 +21,13 @@ firebase.json, firestore.rules
 4. Bật AI: `cd backend && pip install -r requirements.txt`, đặt `ANTHROPIC_API_KEY` và
    `GOOGLE_APPLICATION_CREDENTIALS`, chạy `python main.py`, rồi đặt `API_BASE="http://localhost:8080"`.
 
+## Âm thanh bảng chữ cái (giống nhau trên mọi thiết bị)
+Web phát file mp3 trong `public/audio/letters/` (tên chữ) và `public/audio/words/` (từ minh họa);
+thiếu file nào thì tự dùng giọng của trình duyệt. Tạo file một lần bằng một trong hai script (cách đọc lấy từ `n`, `w` trong `public/js/alphabet.js`):
+- Google Cloud TTS (dùng API key): đặt biến môi trường `GOOGLE_API_KEY` rồi `python tools/generate_audio_google.py`
+- Miễn phí, không cần khóa: `pip install edge-tts` rồi `python tools/generate_audio.py`
+Tạo lại vài chữ: thêm `--only x aw --force`. Xem thêm hướng dẫn ở đầu mỗi script. Không đưa API key lên GitHub.
+
 ## Triển khai
 - Frontend: `firebase deploy --only hosting,firestore` (hoặc GitHub Pages).
 - Backend: Cloud Run / Render dùng `backend/Dockerfile`. **Không** để API key trong code frontend.

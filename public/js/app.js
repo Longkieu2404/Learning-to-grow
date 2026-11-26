@@ -27,6 +27,34 @@ function speak(text, lang = "vi-VN") {
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text); u.lang = lang; u.rate = .85; speechSynthesis.speak(u);
 }
+// ----- Bảng chữ cái: phát file âm thanh có sẵn (giống nhau trên mọi thiết bị) -----
+// Dùng 1 thẻ Audio duy nhất để iPhone/Safari không chặn khi phát nối tiếp.
+const player = new Audio();
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function playFile(src) {
+  return new Promise((res, rej) => {
+    player.onended = player.onpause = res; player.onerror = () => rej(new Error("no audio"));
+    player.src = src; player.play().catch(rej);
+  });
+}
+function speakAsync(text) {   // dự phòng: giọng máy khi chưa có file
+  return new Promise(res => {
+    if (!("speechSynthesis" in window)) return res();
+    const u = new SpeechSynthesisUtterance(text); u.lang = "vi-VN"; u.rate = .8; u.onend = u.onerror = res;
+    speechSynthesis.speak(u);
+  });
+}
+let sayId = 0;
+async function sayLetter(a) {
+  const id = ++sayId;
+  player.pause(); if ("speechSynthesis" in window) speechSynthesis.cancel();
+  for (const [src, text] of [[`audio/letters/${a.id}.mp3`, a.n], [`audio/words/${a.id}.mp3`, a.w]]) {
+    if (id !== sayId) return;
+    try { await playFile(src); } catch { if (id !== sayId) return; await sleep(100); await speakAsync(text); }
+    if (id !== sayId) return;
+    await sleep(450);
+  }
+}
 function beep(ok) {
   try {
     const c = new AudioContext(), o = c.createOscillator(), g = c.createGain();
@@ -128,7 +156,7 @@ $("alphaGrid").innerHTML = ALPHABET.map((a, i) =>
 $("alphaGrid").addEventListener("click", e => {
   const b = e.target.closest(".letter"); if (!b) return;
   const a = ALPHABET[b.dataset.i];
-  speak(`${a.n}. ${a.w}`, "vi-VN");
+  sayLetter(a);
   b.classList.remove("on"); void b.offsetWidth; b.classList.add("on");
 });
 $("btnAlphaBack").addEventListener("click", () => show("s-vi"));
