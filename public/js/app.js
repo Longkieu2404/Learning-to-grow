@@ -110,7 +110,7 @@ function renderInfo() {
 document.querySelectorAll(".subject").forEach(b => b.addEventListener("click", () => start(b.dataset.subject)));
 async function start(subject) {
   state.subject = subject; state.i = 0; state.got = 0; $("quizStars").textContent = state.stars;
-  state.qs = await getQuestions(subject, $("useAI").checked);
+  state.qs = await getQuestions(subject, false);
   show("s-quiz"); render();
 }
 function render() {

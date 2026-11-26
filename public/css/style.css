@@ -99,3 +99,15 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
   .subject span{font-size:3rem}
   .big3{grid-template-columns:1fr}
 }
+
+/* ===== Thẻ môn học: vuông, lớn, lấp đầy khu vực giữa ===== */
+#s-home{max-width:1300px}
+.subjects{gap:32px;width:100%}
+.subject{flex:1 1 0;max-width:400px;aspect-ratio:1/1;padding:16px;gap:12px;border-radius:44px;
+  font-size:clamp(1.6rem,2.6vw,2.8rem);white-space:nowrap}
+.subject span{font-size:clamp(4rem,8vw,9rem)}
+.subject:hover{transform:scale(1.07)}
+@media (max-width:760px){
+  .subject{flex:none;width:100%;max-width:340px;aspect-ratio:auto;border-radius:32px;font-size:2rem}
+  .subject span{font-size:3rem}
+}
