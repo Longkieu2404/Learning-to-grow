@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
   GoogleAuthProvider, signInWithPopup }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./config.js";
 
 const app = initializeApp(firebaseConfig);
@@ -20,5 +20,10 @@ export async function loadProgress(uid) {
   const snap = await getDoc(doc(db, "users", uid));
   return snap.exists() ? snap.data() : { stars: 0, done: {} };
 }
-export const saveProgress = (uid, subject, stars) =>
-  setDoc(doc(db, "users", uid), { stars: increment(stars), done: { [subject]: increment(1) } }, { merge: true });
+// Mỗi lượt học lưu 1 dòng lịch sử: { subject, correct, total, ts }
+export const saveProgress = (uid, subject, correct, total) =>
+  setDoc(doc(db, "users", uid), {
+    stars: increment(correct),
+    done: { [subject]: increment(1) },
+    history: arrayUnion({ subject, correct, total, ts: Date.now() })
+  }, { merge: true });

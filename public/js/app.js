@@ -1,10 +1,26 @@
-import { watchUser, login, register, loginGoogle, logout, loadProgress, saveProgress } from "./firebase.js";
+import { watchUser, login, register, loginGoogle, logout, loadProgress, saveProgress, auth } from "./firebase.js";
 import { getQuestions } from "./exercises.js";
 
 const $ = id => document.getElementById(id);
-const show = id => { document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden")); $(id).classList.remove("hidden"); };
-const state = { user: null, stars: 0, subject: null, qs: [], i: 0, got: 0 };
+const NAMES = { math: "Toán", vi: "Tiếng Việt", en: "Tiếng Anh" };
+const ICONS = { math: "🧮", vi: "📖", en: "🌍" };
+const COLORS = { math: "var(--sky)", vi: "var(--coral)", en: "#f5a623" };
+const state = { user: null, stars: 0, history: [], subject: null, qs: [], i: 0, got: 0 };
 
+// Hiện một màn hình; mọi màn hình trừ đăng nhập nằm trong khung có thanh điều hướng
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
+  $("shell").classList.toggle("hidden", id === "s-auth");
+  $(id).classList.remove("hidden");
+  const tab = ["s-history", "s-stats", "s-info"].includes(id) ? id : "s-home";
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("on", b.dataset.view === tab));
+  if (id === "s-history") renderHistory();
+  if (id === "s-stats") renderStats();
+  if (id === "s-info") renderInfo();
+}
+document.querySelectorAll(".nav-btn").forEach(b => b.addEventListener("click", () => show(b.dataset.view)));
+
+// ---------- Âm thanh & hiệu ứng ----------
 function speak(text, lang = "vi-VN") {
   if (!("speechSynthesis" in window) || !text) return;
   speechSynthesis.cancel();
@@ -30,6 +46,7 @@ function confetti() {
   })();
 }
 
+// ---------- Đăng nhập / Đăng ký ----------
 const msgs = { "auth/invalid-credential": "Sai email hoặc mật khẩu.", "auth/email-already-in-use": "Email này đã có tài khoản.",
   "auth/weak-password": "Mật khẩu cần ít nhất 6 ký tự.", "auth/invalid-email": "Email chưa đúng định dạng." };
 async function doAuth(fn) {
@@ -55,10 +72,41 @@ watchUser(async user => {
   state.user = user;
   if (!user) return show("s-auth");
   const p = await loadProgress(user.uid);
-  state.stars = p.stars || 0; $("starCount").textContent = state.stars;
+  state.stars = p.stars || 0; state.history = p.history || [];
+  $("starCount").textContent = state.stars;
   show("s-home");
 });
 
+// ---------- Lịch sử, thống kê, thông tin ----------
+const fmt = ts => new Date(ts).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+const EMPTY = '<p class="empty">Bé chưa học bài nào.<br>Hãy chọn một môn ở Trang chủ nhé! 🌈</p>';
+
+function renderHistory() {
+  const box = $("historyList");
+  if (!state.history.length) { box.innerHTML = EMPTY; return; }
+  box.innerHTML = [...state.history].sort((a, b) => b.ts - a.ts).slice(0, 50).map(h =>
+    `<div class="row"><span class="e">${ICONS[h.subject] || "📘"}</span>${NAMES[h.subject] || ""}
+     <span>${h.correct}/${h.total} câu đúng ngay lần đầu</span><small>${fmt(h.ts)}</small></div>`).join("");
+}
+function renderStats() {
+  const H = state.history, sum = k => H.reduce((n, h) => n + h[k], 0);
+  $("stStars").textContent = state.stars; $("stSessions").textContent = H.length;
+  $("stRate").textContent = (sum("total") ? Math.round(sum("correct") / sum("total") * 100) : 0) + "%";
+  $("statSubjects").innerHTML = Object.keys(NAMES).map(k => {
+    const hs = H.filter(h => h.subject === k), c = hs.reduce((n, h) => n + h.correct, 0), t = hs.reduce((n, h) => n + h.total, 0);
+    const pct = t ? Math.round(c / t * 100) : 0;
+    return `<div class="row col"><div>${ICONS[k]} ${NAMES[k]} <small>${hs.length} bài · ${c}/${t} câu đúng (${pct}%)</small></div>
+      <div class="meter"><i style="width:${pct}%;background:${COLORS[k]}"></i></div></div>`;
+  }).join("");
+}
+function renderInfo() {
+  const u = auth.currentUser; if (!u) return;
+  $("infoEmail").textContent = u.displayName ? `${u.displayName} (${u.email})` : u.email;
+  const t = u.metadata.creationTime;
+  $("infoSince").textContent = "Tham gia từ " + (t ? new Date(t).toLocaleDateString("vi-VN") : "—");
+}
+
+// ---------- Học ----------
 document.querySelectorAll(".subject").forEach(b => b.addEventListener("click", () => start(b.dataset.subject)));
 async function start(subject) {
   state.subject = subject; state.i = 0; state.got = 0; $("quizStars").textContent = state.stars;
@@ -66,7 +114,7 @@ async function start(subject) {
   show("s-quiz"); render();
 }
 function render() {
-  const q = state.qs[state.i];
+  const q = state.qs[state.i]; q.missed = false;
   $("barFill").style.width = (state.i / state.qs.length * 100) + "%";
   $("qEmoji").textContent = q.emoji || ""; $("qPrompt").textContent = q.prompt; $("feedback").textContent = "";
   const box = $("options"); box.innerHTML = "";
@@ -80,10 +128,12 @@ $("btnSpeak").addEventListener("click", () => { const q = state.qs[state.i]; spe
 
 function answer(btn, ok) {
   if ($("options").classList.contains("lock")) return;
+  const q = state.qs[state.i];
   beep(ok);
-  if (!ok) { btn.classList.add("bad"); $("feedback").textContent = "Thử lại nhé! 💪"; return; }
+  if (!ok) { q.missed = true; btn.classList.add("bad"); $("feedback").textContent = "Thử lại nhé! 💪"; return; }
   $("options").classList.add("lock"); btn.classList.add("ok");
-  $("feedback").textContent = "Đúng rồi! 🎉"; confetti(); state.got++; state.stars++;
+  $("feedback").textContent = "Đúng rồi! 🎉"; confetti();
+  if (!q.missed) { state.got++; state.stars++; }   // sao cho câu đúng ngay lần đầu
   $("quizStars").textContent = state.stars; $("starCount").textContent = state.stars;
   setTimeout(() => {
     $("options").classList.remove("lock");
@@ -91,8 +141,10 @@ function answer(btn, ok) {
   }, 1200);
 }
 async function finish() {
+  const total = state.qs.length;
   $("doneStars").textContent = state.got; show("s-done"); confetti(); speak("Giỏi quá!");
-  try { await saveProgress(state.user.uid, state.subject, state.got); } catch (e) { console.warn("Chưa lưu được", e); }
+  state.history.push({ subject: state.subject, correct: state.got, total, ts: Date.now() });
+  try { await saveProgress(state.user.uid, state.subject, state.got, total); } catch (e) { console.warn("Chưa lưu được", e); }
 }
 $("btnAgain").addEventListener("click", () => start(state.subject));
 $("btnHome").addEventListener("click", () => show("s-home"));
