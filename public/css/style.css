@@ -124,3 +124,15 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
   .subject{width:100%;max-width:340px;aspect-ratio:auto;border-radius:32px;font-size:2rem}
   .subject span{font-size:3rem}
 }
+
+/* ===== Màn hình chọn phần học Tiếng Việt ===== */
+.top.title h2{flex:1;text-align:left}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%}
+.sec{font:inherit;text-align:left;border:0;border-radius:28px;padding:22px 26px;cursor:pointer;color:var(--ink);
+  display:flex;flex-direction:column;gap:6px;box-shadow:0 6px 0 rgba(43,45,91,.12);transition:transform .2s}
+.sec:hover{transform:scale(1.03)}.sec:active{transform:scale(.99)}
+.sec-top{display:flex;justify-content:space-between;align-items:center}
+.sec-ico{font-size:2.8rem;line-height:1}.sec-num{font-weight:800;opacity:.55;font-size:1.3rem}
+.sec b{font-size:1.8rem;line-height:1.2}.sec small{font-size:1.15rem;opacity:.75}
+.qtext{font-size:1.5rem;line-height:1.5;margin:0;font-weight:500}.qtext:empty{display:none}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}

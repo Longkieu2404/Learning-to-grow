@@ -21,9 +21,9 @@ export async function loadProgress(uid) {
   return snap.exists() ? snap.data() : { stars: 0, done: {} };
 }
 // Mỗi lượt học lưu 1 dòng lịch sử: { subject, correct, total, ts }
-export const saveProgress = (uid, subject, correct, total) =>
+export const saveProgress = (uid, subject, correct, total, section = null) =>
   setDoc(doc(db, "users", uid), {
     stars: increment(correct),
     done: { [subject]: increment(1) },
-    history: arrayUnion({ subject, correct, total, ts: Date.now() })
+    history: arrayUnion({ subject, correct, total, section, ts: Date.now() })
   }, { merge: true });
