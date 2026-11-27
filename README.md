@@ -26,7 +26,8 @@ Web phát file mp3 trong `public/audio/letters/` (tên chữ) và `public/audio/
 thiếu file nào thì tự dùng giọng của trình duyệt. Tạo file một lần bằng một trong hai script (cách đọc lấy từ `n`, `w` trong `public/js/alphabet.js`):
 - Google Cloud TTS (dùng API key): đặt biến môi trường `GOOGLE_API_KEY` rồi `python tools/generate_audio_google.py`
 - Miễn phí, không cần khóa: `pip install edge-tts` rồi `python tools/generate_audio.py`
-Tạo lại vài chữ: thêm `--only x aw --force`. Xem thêm hướng dẫn ở đầu mỗi script. Không đưa API key lên GitHub.
+Mặc định script tạo cả bảng chữ cái lẫn phần Thế giới âm (`public/audio/sounds/`) và bỏ qua file đã có; chỉ tạo một nhóm: thêm `--set alphabet`, `--set sounds` (Khám phá chữ và âm) hoặc `--set van` (Bé khám phá vần).
+Tạo lại vài file: thêm `--only x aw s-b w-ch1 p-readAs --force` (tên file không có `.mp3`). Xem thêm hướng dẫn ở đầu mỗi script. Không đưa API key lên GitHub.
 
 ## Triển khai
 - Frontend: `firebase deploy --only hosting,firestore` (hoặc GitHub Pages).

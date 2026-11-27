@@ -1,5 +1,7 @@
 import { API_BASE } from "./config.js";
 import { auth } from "./firebase.js";
+import { soundQuestion } from "./sounds.js";
+import { vanQuestion } from "./van.js";
 
 const rnd = n => Math.floor(Math.random() * n);
 const pick = a => a[rnd(a.length)];
@@ -10,7 +12,7 @@ const Q = (o, speak, lang = "vi-VN") => ({ emoji: "", ...o, speak: speak || o.pr
 // ===== Các phần học môn Tiếng Việt (hiện ở màn hình chọn bài) =====
 export const VI_SECTIONS = [
   { id: "letters", icon: "🔤", title: "Bảng chữ cái",      desc: "Nhận diện chữ và âm",        color: "#dbe8ff" },
-  { id: "sounds",  icon: "🔊", title: "Thế giới âm",        desc: "Học nguyên âm, phụ âm",       color: "#fde4ef" },
+  { id: "sounds",  icon: "🔊", title: "Thế giới âm vần",    desc: "Chữ, âm và vần",       color: "#fde4ef" },
   { id: "build",   icon: "🧩", title: "Xưởng ghép chữ",     desc: "Ghép âm tạo tiếng",           color: "#ddf9e6" },
   { id: "rhyme",   icon: "🏰", title: "Vương quốc vần",     desc: "Khám phá các vần",            color: "#fff0c2" },
   { id: "tones",   icon: "🎨", title: "Sắc màu thanh điệu", desc: "Học 6 thanh tiếng Việt",      color: "#ebe7ff" },
@@ -84,7 +86,7 @@ const gen = {
     const a = rnd(6), b = 1 + rnd(5), s = String(a + b);
     return Q({ prompt: `${a} + ${b} = ?`, options: choices(s, ["1","2","3","4","5","6","7","8","9","10","11"]), answer: s }, `${a} cộng ${b} bằng mấy?`);
   },
-  vi: section => VI_GEN[section || "words"](),
+  vi: section => section?.startsWith("snd:") ? soundQuestion(section.slice(4)) : section?.startsWith("van:") ? vanQuestion(section.slice(4)) : VI_GEN[section || "words"](),
   en() {
     const [e, w] = pick(EN);
     return Q({ prompt: "What is this?", emoji: e, options: choices(w, EN.map(x => x[1])), answer: w }, "What is this?", "en-US");
