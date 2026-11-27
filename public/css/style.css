@@ -233,3 +233,19 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 @media (max-width:760px){
   .wds{grid-template-columns:1fr 1fr}.wd,.wd:nth-child(4){grid-column:auto}.wd:last-child{grid-column:1 / -1}
 }
+
+/* ===== Danh sách bài Khám phá: 3 nhóm chia đều chiều cao, thẻ cùng cỡ, hàng thiếu thẻ được căn giữa ===== */
+#s-explore{height:calc(100vh - 56px);min-height:0;gap:10px}
+.groups{flex:1;min-height:0;gap:clamp(8px,1.6vh,20px)}
+.grp{flex:1;min-height:0;display:flex;flex-direction:column}
+.grp h3{font-size:clamp(1.15rem,2.2vh,1.8rem)}
+.lessons{flex:1;min-height:0;display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.lesson{flex:0 0 calc((100% - 6 * 12px) / 7);justify-content:center;gap:4px;min-width:0}
+.ln{font-size:clamp(.9rem,1.7vh,1.2rem)}
+.lesson b{font-size:clamp(1.6rem,4.4vh,3.4rem)}
+.lesson small{font-size:clamp(.85rem,1.9vh,1.3rem)}
+@media (max-width:1000px){.lesson{flex-basis:calc((100% - 3 * 12px) / 4)}}
+@media (max-width:760px){
+  #s-explore{height:auto}.groups,.grp,.lessons{flex:none}
+  .lesson{flex-basis:calc((100% - 2 * 12px) / 3);padding:14px 6px}
+}
