@@ -33,8 +33,7 @@ export const SOUND_GROUPS = [
     ["c","ch","cá – cha"], ["t","th","ta – tha"], ["n","nh","na – nha"], ["g","gh","gà – ghế"],
     ["ng","ngh","ngô – nghe"], ["k","kh","ke – khe"], ["p","ph","Từ quen thuộc"]] },
   { id: "C", title: "Nhóm C – Chữ ghép và chữ ghép", lessons: [
-    ["ch","tr","chó – tre"], ["s","x","sáo – xe"], ["ng","nh","ngô – nhà"], ["ph","th","phở – thỏ"],
-    ["kh","ch","khỉ – chó"], ["ngh","ng","nghề – ngô"]] }
+    ["ch","tr","chó – tre"], ["ng","nh","ngô – nhà"], ["ph","th","phở – thỏ"], ["kh","ch","khỉ – chó"]] }
 ];
 // Cặp có âm đọc giống nhau → không hỏi kiểu "nghe âm chọn chữ"
 const SAME_SOUND = new Set(["c-k","g-gh","ng-ngh","r-d","s-x","ch-tr"]);
