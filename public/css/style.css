@@ -258,3 +258,17 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 .pair.n3 .wds{grid-template-columns:1fr 1fr}.pair.n3 .wd,.pair.n3 .wd:nth-child(4){grid-column:auto}.pair.n3 .wd:last-child{grid-column:1 / -1}
 .panel.p2{background:#e0fae9}.p2 .bigl,.p2 .hl{color:#17a05d}
 @media (max-width:760px){#s-van{height:auto}.pair.n3{grid-template-columns:1fr}}
+
+/* ===== Danh sách bài (Khám phá chữ & âm, Bé khám phá vần): không bao giờ chồng lấn ===== */
+#s-explore,#s-van{height:auto;min-height:calc(100vh - 56px)}          /* cao hơn màn hình thì cuộn trang, không nén lại */
+#s-explore .groups,#s-van .groups{flex:1 0 auto}
+.grp{flex:1 0 auto}.lessons{flex:1 0 auto;row-gap:12px}
+.lesson{min-height:clamp(105px,15vh,180px);container-type:inline-size}
+.lesson b{white-space:nowrap;font-size:min(11cqw,2.8rem)}                 /* chữ co theo bề rộng thẻ */
+.lesson.l3 b{font-size:min(8cqw,2.4rem)}
+.lesson small{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vanList .lesson{flex-basis:calc((100% - 5 * 12px) / 6)}                  /* 6 thẻ/hàng, nhiều hơn thì xuống hàng 2 */
+@media (max-width:1100px){#vanList .lesson{flex-basis:calc((100% - 3 * 12px) / 4)}}
+@media (max-width:760px){#vanList .lesson{flex-basis:calc((100% - 12px) / 2)}.lesson b{font-size:min(10cqw,2rem)}.lesson.l3 b{font-size:min(7.5cqw,1.6rem)}}
+#vanList .grp:nth-child(4) .lesson{background:#fff3c8}#vanList .grp:nth-child(5) .lesson{background:#ece6ff}
+.lesson.l3 b{font-size:min(9.5cqw,2.5rem)}

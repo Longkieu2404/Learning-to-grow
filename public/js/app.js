@@ -202,7 +202,7 @@ $("goVan").addEventListener("click", () => show("s-van"));
 $("btnVanBack").addEventListener("click", () => show("s-sound"));
 $("vanList").innerHTML = VAN_LEVELS.map(g =>
   `<div class="grp"><h3>${g.title} <small>${g.sub}</small></h3><div class="lessons">${
-    g.lessons.map((l, i) => `<button class="lesson" data-key="${g.id}-${i + 1}"><span class="ln">Bài ${i + 1}</span><b>${l.join(" – ")}</b><small>${
+    g.lessons.map((l, i) => `<button class="lesson${l.length > 2 ? " l3" : ""}" data-key="${g.id}-${i + 1}"><span class="ln">Bài ${i + 1}</span><b>${l.join(" – ")}</b><small>${
       l.map(v => plain(vanLesson(`${g.id}-${i + 1}`).words[l.indexOf(v)][0][0])).join(" – ")}</small></button>`).join("")}</div></div>`).join("");
 $("vanList").addEventListener("click", e => { const b = e.target.closest(".lesson"); if (b) openVan(b.dataset.key); });
 function openVan(key) {
