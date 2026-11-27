@@ -65,6 +65,11 @@ export const VAN_LEVELS = [
 ];
 export const VAN_PHRASES = { word: "Từ này có vần nào?", pic: "Hình nào có vần", read: "Vần nào đọc là" };
 
+// Cách đọc riêng của một số vần. Giọng đọc thường đánh vần "ac" thành "a – c" vì đó chưa phải một tiếng có dấu;
+// ghi sẵn dạng có dấu (ác, ắp...) để giọng đọc phát thành 1 âm tiết. Vần nào nghe chưa đúng thì thêm vào đây rồi tạo lại file.
+export const VAN_SAY = { "at": "át", "ac": "ác", "ach": "ách", "ap": "áp", "ăt": "ắt", "ăc": "ắc", "ăp": "ắp" };
+export const vanSay = v => VAN_SAY[v] || v;
+
 // Tên file âm thanh (tạo bằng tools/generate_audio*.py --set van)
 const vid = v => v.replace(/ă/g, "aw").replace(/â/g, "aa").replace(/ê/g, "ee").replace(/ô/g, "oo").replace(/ơ/g, "ow").replace(/ư/g, "uw");
 export const vanFile = v => `audio/van/v-${vid(v)}.mp3`;
@@ -79,7 +84,7 @@ export function vanLesson(key) {            // key: "<cấp>-<số bài>", ví d
 }
 const rnd = n => Math.floor(Math.random() * n), pick = a => a[rnd(a.length)], shuf = a => [...a].sort(() => Math.random() - .5);
 export function vanQuestion(key) {
-  const L = vanLesson(key), i = rnd(L.vans.length), v = L.vans[i], t = rnd(3), base = { emoji: "", lang: "vi-VN" }, sound = [vanFile(v), v];
+  const L = vanLesson(key), i = rnd(L.vans.length), v = L.vans[i], t = rnd(3), base = { emoji: "", lang: "vi-VN" }, sound = [vanFile(v), vanSay(v)];
   if (t === 0) {                             // nhìn hình → chọn vần
     const j = rnd(L.words[i].length), [w, e] = L.words[i][j], pw = plain(w);
     return { ...base, prompt: `Từ “${pw}” có vần nào?`, emoji: e, options: shuf(L.vans), answer: v, speak: `${pw}. ${VAN_PHRASES.word}`,
@@ -88,8 +93,8 @@ export function vanQuestion(key) {
   if (t === 1) {                             // nghe vần → chọn hình
     const right = pick(L.words[i])[1], others = L.words.flatMap((ws, k) => (k === i ? [] : ws.map(x => x[1])));
     return { ...base, prompt: `Hình nào có vần “${v}”?`, options: shuf([right, ...shuf(others).slice(0, 3)]), answer: right,
-      speak: `${VAN_PHRASES.pic} ${v}?`, clips: [[vanPhraseFile("pic"), VAN_PHRASES.pic], sound] };
+      speak: `${VAN_PHRASES.pic} ${vanSay(v)}?`, clips: [[vanPhraseFile("pic"), VAN_PHRASES.pic], sound] };
   }
   return { ...base, prompt: `Vần nào đọc là “${v}”?`, emoji: "🔊", options: shuf(L.vans), answer: v,   // nghe vần → chọn vần
-    speak: `${VAN_PHRASES.read} ${v}`, clips: [[vanPhraseFile("read"), VAN_PHRASES.read], sound] };
+    speak: `${VAN_PHRASES.read} ${vanSay(v)}`, clips: [[vanPhraseFile("read"), VAN_PHRASES.read], sound] };
 }

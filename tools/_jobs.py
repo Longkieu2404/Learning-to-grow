@@ -38,8 +38,9 @@ def van_jobs():
     p0 = t.index("export const VAN_PHRASES"); phrases = re.findall(r'(\w+):\s*"([^"]+)"', t[p0:t.index("};", p0)])
     if len(vans) < 40 or len(phrases) != 3:
         sys.exit(f"van.js: đọc được {len(vans)} vần, {len(phrases)} câu dẫn — kiểm tra lại định dạng")
+    s0 = t.index("export const VAN_SAY"); say = dict(re.findall(r'"([^"]+)":\s*"([^"]+)"', t[s0:t.index("};", s0)]))   # cách đọc riêng của vần
     d = OUT / "van"
-    jobs = [(d / f"v-{k.translate(_VID)}.mp3", k) for k, _ in vans]
+    jobs = [(d / f"v-{k.translate(_VID)}.mp3", say.get(k, k)) for k, _ in vans]
     jobs += [(d / f"w-{k.translate(_VID)}{n}.mp3", w.replace("[", "").replace("]", "")) for k, ws in vans for n, w in enumerate(ws, 1)]
     jobs += [(d / f"p-{k}.mp3", v) for k, v in phrases]
     return jobs

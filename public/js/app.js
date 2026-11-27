@@ -2,7 +2,7 @@ import { watchUser, login, register, loginGoogle, logout, loadProgress, saveProg
 import { getQuestions, VI_SECTIONS } from "./exercises.js";
 import { ALPHABET } from "./alphabet.js";
 import { SOUND_GROUPS, lessonByKey, snd, sndFile, wordFile } from "./sounds.js";
-import { VAN_LEVELS, vanLesson, vanFile, vanWordFile, plain, markWord } from "./van.js";
+import { VAN_LEVELS, vanLesson, vanFile, vanWordFile, vanSay, plain, markWord } from "./van.js";
 
 const $ = id => document.getElementById(id);
 const NAMES = { math: "Toán", vi: "Tiếng Việt", en: "Tiếng Anh" };
@@ -208,7 +208,7 @@ $("vanList").addEventListener("click", e => { const b = e.target.closest(".lesso
 function openVan(key) {
   const L = vanLesson(key);
   renderLesson({ title: L.vans.join(" – "), desc: L.desc, from: "s-van", play: "van:" + key,
-    panels: L.vans.map((v, i) => ({ label: v, say: v, src: vanFile(v),
+    panels: L.vans.map((v, i) => ({ label: v, say: vanSay(v), src: vanFile(v),
       words: L.words[i].map(([w, e], j) => ({ say: plain(w), src: vanWordFile(v, j), e, html: markWord(w) })) })) });
 }
 $("lessonBody").addEventListener("click", e => { const b = e.target.closest("[data-say]"); if (b) playSeq([[b.dataset.src, b.dataset.say]]); });
