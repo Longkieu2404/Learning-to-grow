@@ -191,3 +191,45 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
   .alpha{grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(6,minmax(0,1fr));gap:6px}
   .nm{display:none}.pic{font-size:46cqmin}.lt{font-size:24cqmin}
 }
+
+/* ===== Thế giới âm ===== */
+#s-sound,#s-explore,#s-lesson{width:100%;max-width:none;min-height:calc(100vh - 56px);gap:16px}
+#s-lesson{height:calc(100vh - 56px);min-height:0}
+.hub{display:grid;grid-template-columns:1fr 1fr;gap:28px;width:100%;flex:1}
+.hubcard{position:relative;align-items:center;justify-content:center;text-align:center;gap:14px}
+.hubcard .sec-ico{font-size:clamp(4rem,8vw,8rem)}.hubcard b{font-size:clamp(1.8rem,3vw,3.2rem)}.hubcard small{font-size:clamp(1.1rem,1.6vw,1.8rem)}
+.hubcard:disabled{cursor:default;opacity:.75}.hubcard:disabled:hover{transform:none}
+.badge{position:absolute;top:18px;right:18px;font-style:normal;font-weight:800;background:var(--sun);border-radius:99px;padding:4px 16px;font-size:1.1rem}
+.groups{display:flex;flex-direction:column;gap:18px;width:100%}
+.grp h3{margin:0 0 8px;font-size:clamp(1.2rem,1.8vw,1.8rem)}.star{background:var(--sun);border-radius:99px;padding:2px 12px;font-size:.9rem;margin-left:8px}
+.lessons{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px}
+.lesson{font:inherit;color:var(--ink);background:#fff;border:0;border-radius:22px;padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:2px;box-shadow:0 5px 0 rgba(43,45,91,.13);transition:transform .18s}
+.grp:nth-child(1) .lesson{background:#e4eeff}.grp:nth-child(2) .lesson{background:#ffe6ef}.grp:nth-child(3) .lesson{background:#e0fae9}
+.lesson:hover{transform:scale(1.06)}.ln{font-size:.95rem;font-weight:700;opacity:.6}
+.lesson b{font-size:clamp(1.6rem,2.4vw,2.6rem);line-height:1.1}.lesson small{font-size:clamp(.8rem,1vw,1.05rem);text-align:center;opacity:.8}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:24px;width:100%;flex:1;min-height:0}
+.panel{background:#fff;border-radius:36px;box-shadow:0 6px 0 rgba(43,45,91,.13);padding:18px;display:flex;flex-direction:column;align-items:center;gap:12px;min-height:0}
+.panel.p0{background:#e4eeff}.panel.p1{background:#ffe6ef}
+.bigl{font:inherit;font-weight:800;font-size:clamp(4rem,12vw,11rem);line-height:1;border:0;background:#fff;border-radius:28px;padding:0 36px;cursor:pointer;color:#2f48c9;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.p1 .bigl{color:#e0364d}.bigl:active,.wd:active{transform:scale(.97)}
+.wds{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;flex:1;min-height:0}
+.wd{font:inherit;font-weight:800;font-size:clamp(1.2rem,2vw,2.2rem);color:var(--ink);background:#fff;border:0;border-radius:24px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 5px 0 rgba(0,0,0,.12);transition:transform .18s}
+.wd span{font-size:clamp(3rem,7vw,7rem);line-height:1}.wd:hover{transform:scale(1.05)}
+@media (max-width:1000px){.lessons{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:760px){
+  #s-lesson{height:calc(100vh - 130px)}.hub{grid-template-columns:1fr}.lessons{grid-template-columns:repeat(3,minmax(0,1fr))}.pair{gap:10px}.panel{padding:10px}
+}
+
+/* ===== Bài học âm: 5 ví dụ mỗi chữ, âm được tô màu ===== */
+.bigl{font-size:clamp(3rem,8vw,7rem);padding:0 32px}
+.wds{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.wd{container-type:size;grid-column:span 2;font-weight:500;gap:0;min-width:0;min-height:0;padding:0}
+.wd:nth-child(4){grid-column:2 / span 2}
+.wd span{font-size:46cqmin}
+.wd em{font-style:normal;font-size:max(1rem,13cqmin);line-height:1.1;text-align:center;padding:0 4px}
+.hl{font-weight:800;color:#2f48c9}.p1 .hl{color:#e0364d}
+@media (max-width:760px){
+  .wds{grid-template-columns:1fr 1fr}.wd,.wd:nth-child(4){grid-column:auto}.wd:last-child{grid-column:1 / -1}
+}

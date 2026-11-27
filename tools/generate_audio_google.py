@@ -11,6 +11,9 @@ Chỉ dùng thư viện có sẵn của Python, không cần cài thêm gì.
    Đổi giọng (ví dụ giọng nam):       python tools/generate_audio_google.py --voice vi-VN-Neural2-D --force
 Kết quả: public/audio/letters/<id>.mp3 và public/audio/words/<id>.mp3 (cách đọc lấy từ n, w trong public/js/alphabet.js).
 """
+import sys, pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from _jobs import build_jobs
 import argparse, base64, json, os, pathlib, re, sys, time, urllib.error, urllib.parse, urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -45,7 +48,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--voice", default="vi-VN-Neural2-A", help="mặc định: giọng nữ Neural2")
     ap.add_argument("--rate", type=float, default=0.8, help="tốc độ đọc 0.25–4.0 (1.0 = bình thường)")
-    ap.add_argument("--only", nargs="*", help="chỉ các id này, ví dụ: x y aw")
+    ap.add_argument("--set", choices=["alphabet", "sounds", "all"], default="all", help="nhóm cần tạo (mặc định: all, file đã có sẽ được bỏ qua)")
+    ap.add_argument("--only", nargs="*", help="chỉ các file này (tên không có .mp3), ví dụ: x aw s-b w-ch1 p-readAs")
     ap.add_argument("--force", action="store_true", help="tạo lại cả file đã có")
     ap.add_argument("--list-voices", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
@@ -59,11 +63,7 @@ def main():
             print(f'{v["name"]:28} {v["ssmlGender"]}')
         return
 
-    jobs = []
-    for id_, name, word in load():
-        if a.only and id_ not in a.only:
-            continue
-        jobs += [(OUT / "letters" / f"{id_}.mp3", name), (OUT / "words" / f"{id_}.mp3", word)]
+    jobs = build_jobs(a.set, a.only)
     failed = []
     for path, text in jobs:
         rel = path.relative_to(ROOT)

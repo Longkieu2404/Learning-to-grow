@@ -63,6 +63,28 @@
         <div id="alphaGrid" class="alpha"></div>
       </section>
 
+      <section id="s-sound" class="screen hidden">
+        <header class="top title"><button class="icon" id="btnSoundBack" aria-label="Quay lại">←</button><h2>Thế giới âm</h2></header>
+        <div class="hub">
+          <button class="sec hubcard" id="goExplore" style="background:#dbe8ff"><span class="sec-ico">🔎</span><b>Khám phá chữ và âm</b><small>Nhận biết và phân biệt các âm gần giống nhau</small></button>
+          <button class="sec hubcard" id="goBuild" style="background:#ddf9e6" disabled><span class="sec-ico">🧩</span><b>Xưởng ghép tiếng</b><small>Ghép âm thành tiếng</small><i class="badge">Sắp ra mắt</i></button>
+        </div>
+      </section>
+
+      <section id="s-explore" class="screen hidden">
+        <header class="top title"><button class="icon" id="btnExploreBack" aria-label="Quay lại">←</button><h2>Khám phá chữ và âm</h2></header>
+        <div id="exploreList" class="groups"></div>
+      </section>
+
+      <section id="s-lesson" class="screen hidden">
+        <header class="top title">
+          <button class="icon" id="btnLessonBack" aria-label="Quay lại">←</button><h2 id="lessonTitle"></h2>
+          <button class="btn green small" id="btnLessonPlay">🎮 Luyện tập</button>
+        </header>
+        <p class="hint" id="lessonDesc"></p>
+        <div id="lessonBody" class="pair"></div>
+      </section>
+
       <section id="s-history" class="screen hidden">
         <h2>Lịch sử học</h2>
         <div id="historyList" class="list"></div>

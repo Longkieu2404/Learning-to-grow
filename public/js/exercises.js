@@ -1,5 +1,6 @@
 import { API_BASE } from "./config.js";
 import { auth } from "./firebase.js";
+import { soundQuestion } from "./sounds.js";
 
 const rnd = n => Math.floor(Math.random() * n);
 const pick = a => a[rnd(a.length)];
@@ -84,7 +85,7 @@ const gen = {
     const a = rnd(6), b = 1 + rnd(5), s = String(a + b);
     return Q({ prompt: `${a} + ${b} = ?`, options: choices(s, ["1","2","3","4","5","6","7","8","9","10","11"]), answer: s }, `${a} cộng ${b} bằng mấy?`);
   },
-  vi: section => VI_GEN[section || "words"](),
+  vi: section => section?.startsWith("snd:") ? soundQuestion(section.slice(4)) : VI_GEN[section || "words"](),
   en() {
     const [e, w] = pick(EN);
     return Q({ prompt: "What is this?", emoji: e, options: choices(w, EN.map(x => x[1])), answer: w }, "What is this?", "en-US");
