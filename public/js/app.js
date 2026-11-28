@@ -1,12 +1,15 @@
 import { watchUser, login, register, loginGoogle, logout, loadProgress, saveProgress, auth } from "./firebase.js";
 import { getQuestions, VI_SECTIONS } from "./exercises.js";
 import { ALPHABET } from "./alphabet.js";
+import { SOUND_GROUPS, lessonByKey, snd, sndFile, wordFile } from "./sounds.js";
+import { SPELL_GROUPS, spellLesson, spellClips, TONES } from "./spell.js";
+import { VAN_LEVELS, vanLesson, vanFile, vanWordFile, vanSay, plain, markWord } from "./van.js";
 
 const $ = id => document.getElementById(id);
 const NAMES = { math: "Toán", vi: "Tiếng Việt", en: "Tiếng Anh" };
 const ICONS = { math: "🧮", vi: "📖", en: "🌍" };
 const COLORS = { math: "var(--sky)", vi: "var(--coral)", en: "#f5a623" };
-const state = { user: null, stars: 0, history: [], subject: null, section: null, qs: [], i: 0, got: 0 };
+const state = { user: null, stars: 0, history: [], subject: null, section: null, back: "s-vi", lesson: null, lessonFrom: "s-explore", spell: null, qs: [], i: 0, got: 0 };
 
 // Hiện một màn hình; mọi màn hình trừ đăng nhập nằm trong khung có thanh điều hướng
 function show(id) {
@@ -24,7 +27,7 @@ document.querySelectorAll(".nav-btn").forEach(b => b.addEventListener("click", (
 // ---------- Âm thanh & hiệu ứng ----------
 function speak(text, lang = "vi-VN") {
   if (!("speechSynthesis" in window) || !text) return;
-  speechSynthesis.cancel();
+  speechSynthesis.cancel(); sayId++; player.pause();
   const u = new SpeechSynthesisUtterance(text); u.lang = lang; u.rate = .85; speechSynthesis.speak(u);
 }
 // ----- Bảng chữ cái: phát file âm thanh có sẵn (giống nhau trên mọi thiết bị) -----
@@ -45,16 +48,21 @@ function speakAsync(text) {   // dự phòng: giọng máy khi chưa có file
   });
 }
 let sayId = 0;
-async function sayLetter(a) {
+// Phát lần lượt các [file âm thanh, văn bản dự phòng]; thiếu file thì dùng giọng máy
+async function playSeq(items, gap = 450, onStep) {
   const id = ++sayId;
   player.pause(); if ("speechSynthesis" in window) speechSynthesis.cancel();
-  for (const [src, text] of [[`audio/letters/${a.id}.mp3`, a.n], [`audio/words/${a.id}.mp3`, a.w]]) {
+  for (const [k, [src, text]] of items.entries()) {
     if (id !== sayId) return;
+    onStep?.(k);
     try { await playFile(src); } catch { if (id !== sayId) return; await sleep(100); await speakAsync(text); }
     if (id !== sayId) return;
-    await sleep(450);
+    await sleep(gap);
   }
+  if (id === sayId) onStep?.(-1);
 }
+const sayLetter = a => playSeq([[`audio/letters/${a.id}.mp3`, a.n], [`audio/words/${a.id}.mp3`, a.w]]);
+const sayQ = q => q.clips ? playSeq(q.clips, 350) : speak(q.speak || q.prompt, q.lang);
 function beep(ok) {
   try {
     const c = new AudioContext(), o = c.createOscillator(), g = c.createGain();
@@ -110,7 +118,8 @@ watchUser(async user => {
 const fmt = ts => new Date(ts).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 const EMPTY = '<p class="empty">Bé chưa học bài nào.<br>Hãy chọn một môn ở Trang chủ nhé! 🌈</p>';
 
-const secTitle = h => { const x = VI_SECTIONS.find(v => v.id === h.section); return x ? " · " + x.title : ""; };
+const secTitle = h => { if (h.section?.startsWith("snd:")) return " · Khám phá chữ và âm"; if (h.section?.startsWith("van:")) return " · Bé khám phá vần"; if (h.section?.startsWith("spell:")) return " · Đánh vần";
+  const x = VI_SECTIONS.find(v => v.id === h.section); return x ? " · " + x.title : ""; };
 function renderHistory() {
   const box = $("historyList");
   if (!state.history.length) { box.innerHTML = EMPTY; return; }
@@ -145,7 +154,9 @@ $("viGrid").innerHTML = VI_SECTIONS.map((x, i) =>
   `<button class="sec" data-sec="${x.id}" style="background:${x.color}">
      <span class="sec-top"><span class="sec-ico">${x.icon}</span><span class="sec-num">${String(i + 1).padStart(2, "0")}</span></span>
      <b>${x.title}</b><small>${x.desc}</small></button>`).join("");
-$("viGrid").addEventListener("click", e => { const b = e.target.closest(".sec"); if (b) b.dataset.sec === "letters" ? show("s-alpha") : start("vi", b.dataset.sec); });
+$("viGrid").addEventListener("click", e => { const b = e.target.closest(".sec"); if (!b) return;
+  const to = { letters: "s-alpha", sounds: "s-sound", spell: "s-spell-list" }[b.dataset.sec];
+  if (to) show(to); else { state.back = "s-vi"; start("vi", b.dataset.sec); } });
 $("btnViBack").addEventListener("click", () => show("s-home"));
 
 // Bảng chữ cái: bấm vào chữ để nghe đọc (dữ liệu là hằng số trong alphabet.js)
@@ -161,6 +172,85 @@ $("alphaGrid").addEventListener("click", e => {
 });
 $("btnAlphaBack").addEventListener("click", () => show("s-vi"));
 
+// Thế giới âm › Khám phá chữ và âm (dữ liệu là hằng số trong sounds.js)
+$("btnSoundBack").addEventListener("click", () => show("s-vi"));
+$("goExplore").addEventListener("click", () => show("s-explore"));
+$("btnExploreBack").addEventListener("click", () => show("s-sound"));
+$("btnLessonBack").addEventListener("click", () => show(state.lessonFrom));
+$("exploreList").innerHTML = SOUND_GROUPS.map(g =>
+  `<div class="grp"><h3>${g.title}${g.star ? ' <span class="star">⭐ Nên học trước</span>' : ""}</h3><div class="lessons">${
+    g.lessons.map((l, i) => `<button class="lesson" data-key="${g.id}${i + 1}"><span class="ln">Bài ${i + 1}</span><b>${l[0]} – ${l[1]}</b><small>${l[2]}</small></button>`).join("")}</div></div>`).join("");
+$("exploreList").addEventListener("click", e => { const b = e.target.closest(".lesson"); if (b) openLesson(b.dataset.key); });
+// Tô đậm, đổi màu phần âm đang học trong từ (q → "qu")
+const hlWord = (w, c) => { const p = c === "q" ? "qu" : c; return w.startsWith(p) ? `<b class="hl">${p}</b>${w.slice(p.length)}` : w; };
+// Trang bài học dùng chung cho Khám phá chữ và âm / Bé khám phá vần
+// d = { title, desc, from, play, panels: [{ label, say, src, words: [{ say, src, e, html }] }] }
+function renderLesson(d) {
+  state.lesson = d.play; state.lessonFrom = d.from;
+  $("lessonTitle").textContent = d.title; $("lessonDesc").textContent = d.desc + " · Bấm vào chữ hoặc hình để nghe 🔊";
+  $("lessonBody").className = "pair n" + d.panels.length;
+  $("lessonBody").innerHTML = d.panels.map((p, i) =>
+    `<div class="panel p${i}"><button class="bigl" data-say="${p.say}" data-src="${p.src}">${p.label}</button><div class="wds">${
+      p.words.map(w => `<button class="wd" data-say="${w.say}" data-src="${w.src}"><span>${w.e}</span><em>${w.html}</em></button>`).join("")}</div></div>`).join("");
+  show("s-lesson");
+}
+function openLesson(key) {
+  const L = lessonByKey(key);
+  renderLesson({ title: `${L.x} – ${L.y}`, desc: L.desc, from: "s-explore", play: "snd:" + key,
+    panels: [L.x, L.y].map((c, i) => ({ label: c, say: snd(c), src: sndFile(c),
+      words: L.words[i].map(([w, e], j) => ({ say: w, src: wordFile(c, j), e, html: hlWord(w, c) })) })) });
+}
+// Bé khám phá vần
+$("goVan").addEventListener("click", () => show("s-van"));
+$("btnVanBack").addEventListener("click", () => show("s-sound"));
+$("vanList").innerHTML = VAN_LEVELS.map(g =>
+  `<div class="grp"><h3>${g.title} <small>${g.sub}</small></h3><div class="lessons">${
+    g.lessons.map((l, i) => `<button class="lesson${l.length > 2 ? " l3" : ""}" data-key="${g.id}-${i + 1}"><span class="ln">Bài ${i + 1}</span><b>${l.join(" – ")}</b><small>${
+      l.map(v => plain(vanLesson(`${g.id}-${i + 1}`).words[l.indexOf(v)][0][0])).join(" – ")}</small></button>`).join("")}</div></div>`).join("");
+$("vanList").addEventListener("click", e => { const b = e.target.closest(".lesson"); if (b) openVan(b.dataset.key); });
+function openVan(key) {
+  const L = vanLesson(key);
+  renderLesson({ title: L.vans.join(" – "), desc: L.desc, from: "s-van", play: "van:" + key,
+    panels: L.vans.map((v, i) => ({ label: v, say: vanSay(v), src: vanFile(v),
+      words: L.words[i].map(([w, e], j) => ({ say: plain(w), src: vanWordFile(v, j), e, html: markWord(w) })) })) });
+}
+$("lessonBody").addEventListener("click", e => { const b = e.target.closest("[data-say]"); if (b) playSeq([[b.dataset.src, b.dataset.say]]); });
+$("btnLessonPlay").addEventListener("click", () => { state.back = "s-lesson"; start("vi", state.lesson); });
+
+// ---------- Đánh vần: âm đầu + vần = tiếng, + thanh = từ ----------
+$("spellList").innerHTML = SPELL_GROUPS.map(g => `<div class="grp"><h3>${g.title} <small>${g.sub}</small></h3><div class="lessons">${
+  g.lessons.map(l => `<button class="lesson l3" data-key="${l.key}"><span class="ln">${l.tag}</span><b>${l.label}</b><small>${l.small}</small></button>`).join("")}</div></div>`).join("");
+$("spellList").addEventListener("click", e => { const b = e.target.closest(".lesson"); if (b) openSpell(b.dataset.key); });
+$("btnSpellListBack").addEventListener("click", () => show("s-vi"));
+$("btnSpellBack").addEventListener("click", () => show("s-spell-list"));
+$("btnSpellPlay").addEventListener("click", () => { state.back = "s-spell"; start("vi", "spell:" + state.spell.key); });
+const curWord = () => state.spell.words[state.spell.i];
+const markBox = k => document.querySelectorAll("#spStage .sp-box").forEach((b, i) => b.classList.toggle("on", i === k));
+function openSpell(key) {
+  const L = spellLesson(key); state.spell = { key, words: L.words, i: 0 };
+  $("spellTitle").textContent = "Đánh vần – " + L.title;
+  $("spStrip").innerHTML = L.words.map((w, i) => `<button class="thumb" data-i="${i}"><span>${w.e}</span>${w.word}</button>`).join("");
+  showWord(0); show("s-spell");
+}
+function showWord(i) {
+  const S = state.spell, n = S.words.length; S.i = (i % n + n) % n;
+  const w = curWord(), t = TONES[w.tone];
+  $("spStage").innerHTML = `<div class="sp-pic">${w.e}</div><div class="sp-eq">
+    <button class="sp-box o" data-i="0"><small>âm đầu</small><b>${w.onset}</b></button><i>+</i>
+    <button class="sp-box v" data-i="1"><small>vần</small><b>${w.van}</b></button><i>=</i>
+    <button class="sp-box s" data-i="2"><small>tiếng</small><b>${w.onset}${w.van}</b></button><i>+</i>
+    <button class="sp-box t" data-i="3"><small>thanh ${t.name}</small><b>${t.mark}</b></button><i>=</i>
+    <button class="sp-box w" data-i="4"><small>từ</small><b><span class="co">${w.onset}</span><span class="cv">${w.vt}</span></b></button></div>`;
+  document.querySelectorAll("#spStrip .thumb").forEach((b, k) => b.classList.toggle("on", k === S.i));
+  document.querySelector("#spStrip .thumb.on")?.scrollIntoView({ block: "nearest", inline: "center" });
+}
+$("spStage").addEventListener("click", e => { const b = e.target.closest(".sp-box"); if (!b) return;
+  const k = +b.dataset.i; playSeq([spellClips(curWord())[k]], 0, j => markBox(j < 0 ? -1 : k)); });
+$("spGo").addEventListener("click", () => playSeq(spellClips(curWord()), 400, markBox));
+$("spPrev").addEventListener("click", () => showWord(state.spell.i - 1));
+$("spNext").addEventListener("click", () => showWord(state.spell.i + 1));
+$("spStrip").addEventListener("click", e => { const b = e.target.closest(".thumb"); if (b) showWord(+b.dataset.i); });
+
 async function start(subject, section = null) {
   state.subject = subject; state.section = section; state.i = 0; state.got = 0; $("quizStars").textContent = state.stars;
   state.qs = await getQuestions(subject, false, 5, section);
@@ -175,9 +265,9 @@ function render() {
     const b = document.createElement("button"); b.className = "opt"; b.textContent = o;
     b.onclick = () => answer(b, o === q.answer); box.appendChild(b);
   });
-  speak(q.speak || q.prompt, q.lang);
+  sayQ(q);
 }
-$("btnSpeak").addEventListener("click", () => { const q = state.qs[state.i]; speak(q.speak || q.prompt, q.lang); });
+$("btnSpeak").addEventListener("click", () => { sayQ(state.qs[state.i]); });
 
 function answer(btn, ok) {
   if ($("options").classList.contains("lock")) return;
@@ -200,7 +290,7 @@ async function finish() {
   state.history.push({ subject: state.subject, section: state.section, correct: state.got, total, ts: Date.now() });
   try { await saveProgress(state.user.uid, state.subject, state.got, total, state.section); } catch (e) { console.warn("Chưa lưu được", e); }
 }
-const backTo = () => show(state.subject === "vi" ? "s-vi" : "s-home");
+const backTo = () => show(state.subject === "vi" ? (state.back || "s-vi") : "s-home");
 $("btnAgain").addEventListener("click", () => start(state.subject, state.section));
 $("btnHome").addEventListener("click", backTo);
 $("btnBack").addEventListener("click", backTo);

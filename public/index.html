@@ -63,6 +63,48 @@
         <div id="alphaGrid" class="alpha"></div>
       </section>
 
+      <section id="s-sound" class="screen hidden">
+        <header class="top title"><button class="icon" id="btnSoundBack" aria-label="Quay lại">←</button><h2>Thế giới âm vần</h2></header>
+        <div class="hub">
+          <button class="sec hubcard" id="goExplore" style="background:#dbe8ff"><span class="sec-ico">🔎</span><b>Khám phá chữ và âm</b><small>Nhận biết và phân biệt các âm gần giống nhau</small></button>
+          <button class="sec hubcard" id="goVan" style="background:#fff0c2"><span class="sec-ico">🎵</span><b>Bé khám phá vần</b><small>5 cấp độ, từ vần đơn giản đến vần khó</small></button>
+        </div>
+      </section>
+
+      <section id="s-explore" class="screen hidden">
+        <header class="top title"><button class="icon" id="btnExploreBack" aria-label="Quay lại">←</button><h2>Khám phá chữ và âm</h2></header>
+        <div id="exploreList" class="groups"></div>
+      </section>
+
+      <section id="s-van" class="screen hidden">
+        <header class="top title"><button class="icon" id="btnVanBack" aria-label="Quay lại">←</button><h2>Bé khám phá vần</h2></header>
+        <div id="vanList" class="groups"></div>
+      </section>
+
+      <section id="s-spell-list" class="screen hidden">
+        <header class="top title"><button class="icon" id="btnSpellListBack" aria-label="Quay lại">←</button><h2>Đánh vần</h2></header>
+        <div id="spellList" class="groups"></div>
+      </section>
+
+      <section id="s-spell" class="screen hidden">
+        <header class="top title">
+          <button class="icon" id="btnSpellBack" aria-label="Quay lại">←</button><h2 id="spellTitle"></h2>
+          <button class="btn green small" id="btnSpellPlay">🎮 Luyện tập</button>
+        </header>
+        <div id="spStage" class="stage"></div>
+        <div class="sp-ctrl"><button class="icon" id="spPrev" aria-label="Từ trước">◀</button><button class="btn green" id="spGo">🔊 Đánh vần</button><button class="icon" id="spNext" aria-label="Từ sau">▶</button></div>
+        <div id="spStrip" class="strip"></div>
+      </section>
+
+      <section id="s-lesson" class="screen hidden">
+        <header class="top title">
+          <button class="icon" id="btnLessonBack" aria-label="Quay lại">←</button><h2 id="lessonTitle"></h2>
+          <button class="btn green small" id="btnLessonPlay">🎮 Luyện tập</button>
+        </header>
+        <p class="hint" id="lessonDesc"></p>
+        <div id="lessonBody" class="pair"></div>
+      </section>
+
       <section id="s-history" class="screen hidden">
         <h2>Lịch sử học</h2>
         <div id="historyList" class="list"></div>

@@ -3,3 +3,5 @@ __pycache__/
 *.json.key
 node_modules/
 .firebase/
+
+tools/_try/
